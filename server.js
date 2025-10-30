@@ -1,9 +1,11 @@
 import express from "express";
 import fetch from "node-fetch";
 import cors from "cors";
+import querystring from "querystring"; // ✅ To convert JSON → form data
 
 const app = express();
 app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -12,18 +14,24 @@ app.get("/", (req, res) => {
 
 app.post("/insert", async (req, res) => {
   try {
-    const phpURL = "http://agritantra.infinityfreeapp.com/insert.php"; // ✅ change to your InfinityFree link
+    const phpURL = "http://agritantra.infinityfreeapp.com/insert.php"; // ✅ your PHP endpoint
+
+    // Convert JSON body → form data
+    const formBody = querystring.stringify(req.body);
+
     const response = await fetch(phpURL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(req.body),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: formBody,
     });
 
     const text = await response.text();
-    res.send(`✅ Forwarded: ${text}`);
+    res.send(`✅ Forwarded to PHP: ${text}`);
   } catch (err) {
-    console.error(err);
-    res.status(500).send("❌ Proxy error");
+    console.error("Proxy error:", err);
+    res.status(500).send("❌ Proxy error: " + err.message);
   }
 });
 
