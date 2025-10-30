@@ -12,7 +12,7 @@ app.get("/", (req, res) => {
 
 app.post("/insert", async (req, res) => {
   try {
-    const phpURL = "https://agritantra.infinityfreeapp.com/insert.php"; // ✅ change to your InfinityFree link
+    const phpURL = "http://agritantra.infinityfreeapp.com/insert.php"; // ✅ change to your InfinityFree link
     const response = await fetch(phpURL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
