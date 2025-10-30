@@ -18,7 +18,7 @@ app.post("/insert", async (req, res) => {
     const { temperature, humidity, soilMoisture, rainfall } = req.body;
 
     // Replace with your InfinityFree PHP API URL
-    const phpURL = "https://your-infinityfree-site.com/insert.php";
+    const phpURL = "https://agritantra.infinityfreeapp.com/insert.php";
 
     const response = await axios.post(phpURL, {
       temperature,
