@@ -1,45 +1,45 @@
 const express = require("express");
+const cors = require("cors");
 const axios = require("axios");
+
 const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cors());
 
-// POST endpoint for ESP32
-app.post("/insert", async (req, res) => {
-  try {
-    const { temperature, humidity, rain, ldr } = req.body;
-
-    if (!temperature || !humidity) {
-      return res.status(400).send("Missing parameters");
-    }
-
-    // URL of your InfinityFree insert.php
-    const targetURL = "https://your-infinityfree-site.infinityfreeapp.com/insert.php";
-
-    // Forward data to InfinityFree
-    const response = await axios.post(
-      targetURL,
-      new URLSearchParams({
-        temperature,
-        humidity,
-        rain,
-        ldr,
-      })
-    );
-
-    return res.status(200).send("✅ Forwarded to InfinityFree: " + response.data);
-  } catch (err) {
-    console.error("❌ Error forwarding:", err.message);
-    return res.status(500).send("❌ Failed to forward data: " + err.message);
-  }
-});
-
+// === Root route just to test Render deployment ===
 app.get("/", (req, res) => {
   res.send("🌱 ESP32 Proxy API running on Render!");
 });
 
+// === Proxy endpoint ===
+// ESP32 will POST here, and this will forward to your InfinityFree PHP endpoint
+app.post("/insert", async (req, res) => {
+  try {
+    const { temperature, humidity, soilMoisture, rainfall } = req.body;
+
+    // Replace with your InfinityFree PHP API URL
+    const phpURL = "https://your-infinityfree-site.com/insert.php";
+
+    const response = await axios.post(phpURL, {
+      temperature,
+      humidity,
+      soilMoisture,
+      rainfall,
+    });
+
+    res.json({
+      status: "ok",
+      message: "Data forwarded successfully!",
+      response: response.data,
+    });
+  } catch (err) {
+    console.error("Proxy Error:", err.message);
+    res.status(500).json({ status: "error", error: err.message });
+  }
+});
+
+// === Start server ===
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
