@@ -1,12 +1,11 @@
 import express from "express";
-import fetch from "node-fetch";
 import cors from "cors";
-import querystring from "querystring"; // ✅ To convert JSON → form data
+import querystring from "querystring";
 
 const app = express();
 app.use(cors());
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
   res.send("🌱 ESP32 Proxy API running on Render!");
@@ -14,16 +13,13 @@ app.get("/", (req, res) => {
 
 app.post("/insert", async (req, res) => {
   try {
-    const phpURL = "http://agritantra.infinityfreeapp.com/insert.php"; // ✅ your PHP endpoint
-
-    // Convert JSON body → form data
+    const phpURL = "http://agritantra.infinityfreeapp.com/insert.php";
     const formBody = querystring.stringify(req.body);
 
+    // ✅ Using built-in fetch from Node 18+
     const response = await fetch(phpURL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: formBody,
     });
 
